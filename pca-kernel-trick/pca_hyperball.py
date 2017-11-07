@@ -5,6 +5,11 @@ import itertools
 import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.decomposition import PCA
+from matplotlib.colors import ListedColormap
+
+RED = '#FF0000'
+GREEN = '#00FF00'
+BLUE = '#0000FF'
 
 def parse_args():
     if len(sys.argv) != 4:
@@ -34,21 +39,32 @@ def distance_from_centre(point):
 def main():
     dimension, radius, number_of_points = parse_args()
     points = prepare_points(dimension, radius, number_of_points)
+    colours = []
+
+    for point in points:
+        if distance_from_centre(point) > radius:
+            colours.append(BLUE)
+        else:
+            colours.append(GREEN)
+
     corners = [list(i) for i in itertools.product([-radius, radius], repeat=dimension)]
 
     for corner in corners:
         points.append(corner)
+        colours.append(RED)
 
+    cmap = ListedColormap([RED, GREEN, BLUE])
     pca = PCA(n_components=2)
     pca.fit(points)
     pca_points = pca.transform(points)
 
-    print("Points: ({})\n".format(len(points)), points)
-    print("Points after PCA: ({})\n".format(len(pca_points)), pca_points)
+    # print("Points: ({})\n".format(len(points)), points)
+    # print("Points after PCA: ({})\n".format(len(pca_points)), pca_points)
+    print("Points: {}\nCorners: {}".format(len(points), len(corners)))
 
     x = pca_points[:,0]
     y = pca_points[:,1]
-    plt.scatter(x, y)
+    plt.scatter(x, y, c=colours, cmap=cmap)
     plt.show()
 
 
