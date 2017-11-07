@@ -1,0 +1,56 @@
+import sys
+import random
+import math
+import itertools
+import matplotlib.pyplot as plt
+import numpy as np
+from sklearn.decomposition import PCA
+
+def parse_args():
+    if len(sys.argv) != 4:
+        print("Usage: python pca_hyperball.py <dimension> <radius> <points>")
+        sys.exit(1)
+    dimension = int(sys.argv[1])
+    radius = float(sys.argv[2])
+    number_of_points = int(sys.argv[3])
+    return dimension, radius, number_of_points
+
+def prepare_points(dimension, radius, number):
+    points = []
+    for _ in range(0, number):
+        point = []
+        for _ in range(0, dimension):
+            i = random.uniform(-radius, radius)
+            point.append(i)
+        points.append(point)
+    return points
+
+def distance_from_centre(point):
+    sum = 0
+    for i in point:
+        sum += i ** 2
+    return math.sqrt(sum)
+
+def main():
+    dimension, radius, number_of_points = parse_args()
+    points = prepare_points(dimension, radius, number_of_points)
+    corners = [list(i) for i in itertools.product([-radius, radius], repeat=dimension)]
+
+    for corner in corners:
+        points.append(corner)
+
+    pca = PCA(n_components=2)
+    pca.fit(points)
+    pca_points = pca.transform(points)
+
+    print("Points: ({})\n".format(len(points)), points)
+    print("Points after PCA: ({})\n".format(len(pca_points)), pca_points)
+
+    x = pca_points[:,0]
+    y = pca_points[:,1]
+    plt.scatter(x, y)
+    plt.show()
+
+
+if __name__ == '__main__':
+    main()
