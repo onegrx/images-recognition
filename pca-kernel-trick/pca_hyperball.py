@@ -5,20 +5,19 @@ import itertools
 import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.decomposition import PCA
-from matplotlib.colors import ListedColormap
 
 RED = '#FF0000'
 GREEN = '#00FF00'
 BLUE = '#0000FF'
+radius = 1
 
 def parse_args():
-    if len(sys.argv) != 4:
-        print("Usage: python pca_hyperball.py <dimension> <radius> <points>")
+    if len(sys.argv) != 3:
+        print("Usage: python pca_hyperball.py <dimension> <points>")
         sys.exit(1)
     dimension = int(sys.argv[1])
-    radius = float(sys.argv[2])
-    number_of_points = int(sys.argv[3])
-    return dimension, radius, number_of_points
+    number_of_points = int(sys.argv[2])
+    return dimension, number_of_points
 
 def prepare_points(dimension, radius, number):
     points = []
@@ -37,7 +36,7 @@ def distance_from_centre(point):
     return math.sqrt(sum)
 
 def main():
-    dimension, radius, number_of_points = parse_args()
+    dimension, number_of_points = parse_args()
     points = prepare_points(dimension, radius, number_of_points)
     colours = []
 
@@ -53,7 +52,6 @@ def main():
         points.append(corner)
         colours.append(RED)
 
-    cmap = ListedColormap([RED, GREEN, BLUE])
     pca = PCA(n_components=2)
     pca.fit(points)
     pca_points = pca.transform(points)
@@ -64,7 +62,7 @@ def main():
 
     x = pca_points[:,0]
     y = pca_points[:,1]
-    plt.scatter(x, y, c=colours, cmap=cmap)
+    plt.scatter(x, y, c=colours)
     plt.show()
 
 
