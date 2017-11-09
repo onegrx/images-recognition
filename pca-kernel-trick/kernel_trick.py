@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from sklearn.decomposition import PCA
+from sklearn.decomposition import PCA, KernelPCA
 from PIL import Image as im
 
 WHITE = 255
@@ -14,7 +14,7 @@ def load_image(path):
     for x in range(rgb_img.width):
         for y in range(rgb_img.height):
             r, g, b = rgb_img.getpixel((x, y))
-            hexc = "#%02x%02x%02x" % (r, g, b)
+            hexc = '#%02x%02x%02x' % (r, g, b)
             if (r, g, b) != (255, 255, 255):
                 point = [x, -y + img.height]
                 points.append(point)
@@ -30,16 +30,18 @@ def draw_vector(v0, v1, ax=None):
     ax.annotate('', v1, v0, arrowprops=arrowprops)
 
 
-
 def main():
-    points, colours = load_image('data/set1.bmp')
+    points, colours = load_image('data/set2.bmp')
 
     X = np.array(points)
     pca = PCA(n_components=2)
+    # pca = KernelPCA(n_components=2, kernel='cosine')
+    # pca = KernelPCA(n_components=2, kernel='rbf', gamma=20)
     pca.fit(X)
 
-    plt.scatter(X[:, 0], X[:, 1], alpha=0.2, c=colours, marker=".")
+    plt.scatter(X[:, 0], X[:, 1], alpha=0.2, c=colours, marker='.')
     for length, vector in zip(pca.explained_variance_, pca.components_):
+        # print(length, vector)
         v = vector * 3 * np.sqrt(length)
         draw_vector(pca.mean_, pca.mean_ + v)
     plt.axis('equal');
