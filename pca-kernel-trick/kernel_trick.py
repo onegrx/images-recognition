@@ -31,20 +31,25 @@ def draw_vector(v0, v1, ax=None):
 
 
 def main():
-    points, colours = load_image('data/set2.bmp')
+    points, colours = load_image('data/set1.bmp')
+    X = np.asarray(points)
 
-    X = np.array(points)
-    pca = PCA(n_components=2)
-    # pca = KernelPCA(n_components=2, kernel='cosine')
-    # pca = KernelPCA(n_components=2, kernel='rbf', gamma=20)
-    pca.fit(X)
+    pca = PCA()
+    X_pca = pca.fit_transform(X)
+    plt.scatter(X_pca[:, 0], X_pca[:, 1], alpha=0.2, c=colours, marker='.')
 
-    plt.scatter(X[:, 0], X[:, 1], alpha=0.2, c=colours, marker='.')
-    for length, vector in zip(pca.explained_variance_, pca.components_):
-        # print(length, vector)
-        v = vector * 3 * np.sqrt(length)
-        draw_vector(pca.mean_, pca.mean_ + v)
-    plt.axis('equal');
+    # # Kernel adjust
+    # kpca = KernelPCA(kernel='rbf', gamma=10)
+    # X_kpca = kpca.fit_transform(X)
+    # plt.scatter(X_kpca[:, 0], X_kpca[:, 1], alpha=0.2, c=colours, marker='.')
+
+    # for length, vector in zip(pca.explained_variance_, pca.components_):
+    #     # print(length, vector)
+    #     v = vector * 3 * np.sqrt(length)
+    #     draw_vector(pca.mean_, pca.mean_ + v)
+    # plt.axis('equal');
+
+
     plt.show()
 
 if __name__ == '__main__':
