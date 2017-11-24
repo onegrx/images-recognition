@@ -20,10 +20,23 @@ def init_centers(size, flatten_image):
 def init_centers_explicite():
     return [[255, 0, 0], [0, 255, 0], [0, 0, 255]]
 
+def remove_duplicated(X):
+    seen = set()
+    result = []
+    for np_item in X:
+        item = tuple(np_item.tolist())
+        if item not in seen:
+            seen.add(item)
+            result.append(np_item)
+    return np.asarray(result, dtype='int64')
+
 def main():
     img = io.imread('hansolo.jpg')
     size = img.shape[0] * img.shape[1]
     X = np.asarray(img.reshape(size, 3), dtype='int64')
+
+    # X = remove_duplicated(X)
+    # print(len(X))
 
     centers = init_centers(size, X)
     # centers = init_centers_explicite()
