@@ -1,10 +1,12 @@
 import random
+import statistics
 import numpy as np
 import matplotlib.pyplot as plt
 from skimage import io
 from pyclustering.cluster.kmedians import kmedians
 from pyclustering.utils import draw_clusters
 from sklearn.decomposition import PCA
+from matplotlib.colors import ListedColormap
 
 k = 3
 
@@ -19,7 +21,7 @@ def init_centers_explicite():
     return [[255, 0, 0], [0, 255, 0], [0, 0, 255]]
 
 def main():
-    img = io.imread('monroe.jpg')
+    img = io.imread('hansolo.jpg')
     size = img.shape[0] * img.shape[1]
     X = np.asarray(img.reshape(size, 3), dtype='int64')
 
@@ -41,13 +43,28 @@ def main():
     # draw_clusters(X, clusters)
 
     pca = PCA(n_components=2)
-    pca.fit(X4)
-    pca_points = pca.transform(X4)
+    pca.fit(X)
+    pca_points = pca.transform(X)
 
-    # print(pca_points)
+    h = 0.5
+    n = 20
+
+    for i in range(len(clusters)):
+
+        median_colour_cluster = [
+            statistics.median(X[clusters[i]][:, 0]) / 255.0,
+            statistics.median(X[clusters[i]][:, 1]) / 255.0,
+            statistics.median(X[clusters[i]][:, 2]) / 255.0
+        ]
+
+        for j in range(len(clusters[i])):
+            p = clusters[i][j]
+            x, y = np.mgrid[slice(pca_points[p][0] - n * h, pca_points[p][0] + n * h, h),
+                            slice(pca_points[p][1] - n * h, pca_points[p][1] + n * h, h)]
+
+            plt.pcolormesh(x, y, np.full((x.shape[0], x.shape[1]), i), cmap=ListedColormap([median_colour_cluster]))
 
     colours = ['#%02x%02x%02x' % (r, g, b) for [r, g, b] in X]
-
     plt.scatter(pca_points[:, 0], pca_points[:, 1], c=colours, s=10)
     plt.show()
 
